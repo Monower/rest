@@ -85,7 +85,30 @@
 <script type="text/javascript">
  $(document).ready(function(){
   //Fetch All Records
-  
+  function loadtable(){
+    $.ajax({
+      url: 'http://localhost/rest/api-fetch-all.php',
+      type: "GET",
+      success: function(data){
+        if (data.status==false) {
+          $("#load-table").append("<tr><td colspan='6'><h2>"+data.message+"</h2></td></tr>")
+        }else{
+          $.each(data,function(key, value){
+            $('#load-table').append("<tr>"+
+                                    "<td>"+value.id+"</td>"+
+                                    "<td>"+value.student_name+"</td>"+
+                                    "<td>"+value.age+"</td>"+
+                                    "<td>"+value.city+"</td>"+
+                                    "<td><button class='edit-btn' data-eid='"+value.id+"'>EDIT</button></td>"+
+                                    "<td><button class='delete-btn' data-id='"+value.id+"'>DELETE</button></td>"+
+                                    "</tr>");
+          })
+        }
+      }
+    });
+  }
+
+  loadtable();
 
   //Show Success or Error Messages
 
