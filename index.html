@@ -123,10 +123,29 @@
 
 
   //Fetch Single Record : Show in Modal Box
-
+  $(document).on("click",".edit-btn",function(){
+    $('#modal').show();
+    let studentID=$(this).data('eid');
+    let obj= {sid:studentID};
+    let myjson=JSON.stringify(obj); //this converts js object to json. json.parse converts json to js object.
+    
+    $.ajax({
+      url: 'http://localhost/rest/api-fetch-single.php',
+      type: "POST",
+      data: myjson,
+      success: function(data){
+        $('#edit-id').val(data[0].id);
+        $('#edit-name').val(data[0].student_name);
+        $('#edit-age').val(data[0].age);
+        $('#edit-city').val(data[0].city);
+      }
+    })
+  })
 
   //Hide Modal Box
-
+  $('#close-btn').on("click",function(){
+    $('#modal').hide();
+  })
 
   //Update Record
 
