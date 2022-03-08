@@ -86,6 +86,7 @@
  $(document).ready(function(){
   //Fetch All Records
   function loadtable(){
+    $('#load-table').html("");
     $.ajax({
       url: 'http://localhost/rest/api-fetch-all.php',
       type: "GET",
@@ -110,6 +111,40 @@
 
   loadtable();
 
+  //show success or error messages
+  function message(message,status){
+    if(status==true){
+      $('#success-message').html(message).slideDown();
+      $('#error-message').slideUp();
+      setTimeout(function(){
+        $('#success-message').slideUp();
+      },4000)
+    }else if(status==false){
+      $('#error-message').html(message).slideDown();
+      $('#success-message').slideUp();
+      setTimeout(function(){
+        $('#error-message').slideUp();
+      },4000)
+    }
+  }
+
+ //function for form data to JSON object
+  function jsondata(targetform){
+    let arr=$(targetform).serializeArray();
+    //console.log(arr);
+    let obj={};
+    for(let a=0;a<arr.length;a++){
+      if(arr[a].value==""){
+        return false;
+      }
+      obj[arr[a].name]=arr[a].value;
+
+    }
+    //console.log(obj);
+    let json_string=JSON.stringify(obj);
+    return json_string;
+  }
+
   //Show Success or Error Messages
 
 
@@ -117,7 +152,30 @@
 
 
   //Insert New Record
+  $('#save-button').click(function(e){
+    e.preventDefault();
+    
+    let jsonobj=jsondata("#addForm");
+    
+    if(jsonobj==false){
+        message('All fields are required.',false);
+    }else{
+      $.ajax({
+        url: 'http://localhost/rest/api-insert.php',
+        type: 'POST',
+        data: jsonobj,
+        success: function(data){
+          message(data.message,data.status);
 
+          if(data.status){
+            loadtable();
+            $('#addForm').trigger('reset');
+          }
+        }
+      })
+    }
+
+  })
 
   //Delete Record
 
@@ -148,7 +206,31 @@
   })
 
   //Update Record
+  $('#edit-submit').click(function(e){
+    e.preventDefault();
+    
+    let jsonobj=jsondata("#edit-form");
+    
+    if(jsonobj==false){
+        message('All fields are required.',false);
+    }else{
+      $.ajax({
+        url: 'http://localhost/rest/api-update.php',
+        type: 'POST',
+        data: jsonobj,
+        success: function(data){
+          message(data.message,data.status);
 
+          if(data.status){
+            $('#modal').hide();
+            loadtable();
+           
+          }
+        }
+      })
+    }
+
+  })
 
   //Live Search Record
 
