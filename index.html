@@ -178,6 +178,30 @@
   })
 
   //Delete Record
+  $(document).on("click",".delete-btn",function(){
+    if(confirm("you really want to delete this record?")){
+      let studentID=$(this).data('id');
+      let obj= {sid:studentID};
+      let myjson=JSON.stringify(obj);
+
+      let row=this;
+
+      $.ajax({
+      url: 'http://localhost/rest/api-delete.php',
+      type: "POST",
+      data: myjson,
+      success: function(data){
+        message(data.message,data.status);
+
+        if(data.status){
+          console.log(data.status);
+
+          $(row).closest('tr').fadeOut();
+        }
+      }
+    })
+    }
+  })
 
 
   //Fetch Single Record : Show in Modal Box
@@ -233,7 +257,34 @@
   })
 
   //Live Search Record
+  $('#search').on('keyup',function(){
+    let search_term=$(this).val();
 
+    $('#load-table').html('');
+
+    $.ajax({
+        url: 'http://localhost/rest/api-search.php?search='+search_term,
+        type: 'GET',
+        success: function(data){
+          if (data.Status==false) {
+          $("#load-table").append("<tr><td colspan='6'><h2>"+data.message+"</h2></td></tr>")
+          
+        }else{
+          $.each(data,function(key, value){
+            $('#load-table').append("<tr>"+
+                                    "<td>"+value.id+"</td>"+
+                                    "<td>"+value.student_name+"</td>"+
+                                    "<td>"+value.age+"</td>"+
+                                    "<td>"+value.city+"</td>"+
+                                    "<td><button class='edit-btn' data-eid='"+value.id+"'>EDIT</button></td>"+
+                                    "<td><button class='delete-btn' data-id='"+value.id+"'>DELETE</button></td>"+
+                                    "</tr>");
+          })
+        }
+
+        }
+      })
+  })
  });
   
 </script>
